@@ -1,0 +1,64 @@
+using UnityEngine;
+using System.Collections.Generic;
+
+public class CactusSpawner : MonoBehaviour
+{
+    [Header("References")]
+    public Transform ObstacleSpawnPoint;      // Empty placed just above the ground
+    public GameObject Obstacle;               // Drag your actual cactus prefab here
+    public LayerMask GroundLayer;           // Optional, unused in this version but keep for future checks
+
+    [Header("Spawn Settings")]
+    public float SpawnInterval = 5f;        // How often to try spawning
+    public float DestroyDistance = 15f;     // Distance behind camera at which to destroy cactus
+
+    private List<GameObject> SpawnedCacti = new List<GameObject>();
+    private Camera MainCamera;
+
+    private void Start()
+    {
+        MainCamera = Camera.main;
+        InvokeRepeating(nameof(SpawnCactusIfNeeded), 0f, SpawnInterval);
+    }
+
+    private void SpawnCactusIfNeeded()
+    {
+        // Clean up old cacti behind the camera
+        SpawnedCacti.RemoveAll(c =>
+        {
+            if (c == null) return true;
+            if (c.transform.position.x + DestroyDistance < MainCamera.transform.position.x)
+            {
+                Destroy(c);
+                return true;
+            }
+            return false;
+        });
+
+        // Avoid overlapping too closely
+        float spawnXMin = MainCamera.transform.position.x + 8f;
+        float spawnXMax = MainCamera.transform.position.x + 15f;
+
+        foreach (var c in SpawnedCacti)
+        {
+            if (c != null && c.transform.position.x > spawnXMin && c.transform.position.x < spawnXMax)
+                return;
+        }
+
+        // Calculate spawn position
+        float spawnX = Random.Range(spawnXMin, spawnXMax);
+
+        // Get cactus height to adjust Y so it sits on the ground
+        float cactusHeight = Obstacle.GetComponent<SpriteRenderer>().bounds.size.y;
+        float cactusBottomOffset = cactusHeight / 2f;
+
+        Vector3 spawnPosition = new Vector3(
+            spawnX,
+            ObstacleSpawnPoint.position.y + cactusBottomOffset,
+            0f
+        );
+
+        GameObject newCactus = Instantiate(Obstacle, spawnPosition, Quaternion.identity);
+        SpawnedCacti.Add(newCactus);
+    }
+}

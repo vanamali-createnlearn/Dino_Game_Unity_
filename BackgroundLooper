@@ -1,0 +1,82 @@
+using UnityEngine;
+
+public class BackgroundLooper : MonoBehaviour
+{
+    public Transform[] tiles; // e.g. Ground1, Ground2, Ground3
+
+    private float[] tileWidths;
+
+    private void Start()
+    {
+        tileWidths = new float[tiles.Length];
+
+        for (int i = 0; i < tiles.Length; i++)
+        {
+            tileWidths[i] = CalculateTileWidth(tiles[i]);
+        }
+    }
+
+    private void Update()
+    {
+        float cameraLeftEdge = Camera.main.transform.position.x - GetScreenHalfWidth();
+
+        for (int i = 0; i < tiles.Length; i++)
+        {
+            Transform tile = tiles[i];
+            float tileRightEdge = GetRightmostChildX(tile);
+
+            if (tileRightEdge < cameraLeftEdge)
+            {
+                float rightmostTileX = FindRightmostTileX();
+                tile.position = new Vector3(rightmostTileX + tileWidths[i], tile.position.y, tile.position.z);
+            }
+        }
+    }
+
+    private float FindRightmostTileX()
+    {
+        float maxX = tiles[0].position.x;
+        foreach (Transform tile in tiles)
+        {
+            if (tile.position.x > maxX)
+                maxX = tile.position.x;
+        }
+        return maxX;
+    }
+
+    private float CalculateTileWidth(Transform parent)
+    {
+        float minX = float.MaxValue;
+        float maxX = float.MinValue;
+
+        foreach (SpriteRenderer sr in parent.GetComponentsInChildren<SpriteRenderer>())
+        {
+            Bounds bounds = sr.bounds;
+            minX = Mathf.Min(minX, bounds.min.x);
+            maxX = Mathf.Max(maxX, bounds.max.x);
+        }
+
+        return maxX - minX;
+    }
+
+    private float GetRightmostChildX(Transform parent)
+    {
+        float rightX = float.MinValue;
+
+        foreach (SpriteRenderer sr in parent.GetComponentsInChildren<SpriteRenderer>())
+        {
+            float childRight = sr.bounds.max.x;
+            if (childRight > rightX)
+                rightX = childRight;
+        }
+
+        return rightX;
+    }
+
+    private float GetScreenHalfWidth()
+    {
+        float height = 2f * Camera.main.orthographicSize;
+        float width = height * Camera.main.aspect;
+        return width / 2f;
+    }
+}

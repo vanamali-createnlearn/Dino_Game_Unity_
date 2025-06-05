@@ -1,0 +1,14 @@
+using UnityEngine;
+
+public class CactusKillPlayer : MonoBehaviour
+{
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.name.Contains("Cactus"))
+        {
+            Debug.Log("Player touched a cactus! Destroying player...");
+            Destroy(gameObject); // Or trigger your game over logic here
+        }
+    }
+}
+

@@ -1,0 +1,16 @@
+using UnityEngine;
+
+public class ScoreZoneTrigger : MonoBehaviour
+{
+    private bool hasScored = false;
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!hasScored && other.CompareTag("Player"))
+        {
+            Debug.Log("Triggered!");
+            ScoreManager.Instance.AddScore(1);
+            hasScored = true;
+        }
+    }
+}

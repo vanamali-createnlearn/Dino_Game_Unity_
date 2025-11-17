@@ -4,19 +4,14 @@ public class BackgroundLooper : MonoBehaviour
 {
     public Transform[] tiles; // e.g. Ground1, Ground2, Ground3
 
-    public float baseSpeed = 2f;         // starting speed
-    public float speedIncreaseRate = 0.2f; // how fast speed increases over time
+    public float baseSpeed = 2f;           // starting conveyor speed
+    public float speedIncreaseRate = 0.2f; // how fast speed increases
 
     private float currentSpeed;
-    private float timer;
-
     private float[] tileWidths;
 
     private void Start()
     {
-        currentSpeed = baseSpeed;
-        timer = 0f;
-
         tileWidths = new float[tiles.Length];
 
         for (int i = 0; i < tiles.Length; i++)
@@ -27,11 +22,10 @@ public class BackgroundLooper : MonoBehaviour
 
     private void Update()
     {
-        // --- TIMER FOR SPEED RAMP ---
-        timer += Time.deltaTime;
-        currentSpeed = baseSpeed + (timer * speedIncreaseRate);
+        // Conveyor speed grows based on the global timer
+        currentSpeed = baseSpeed + (GameTimer.TimeAlive * speedIncreaseRate);
 
-        // --- MOVE THE TILES LEFT ---
+        // Move each tile left based on the updated speed
         foreach (Transform tile in tiles)
         {
             tile.position += Vector3.left * currentSpeed * Time.deltaTime;

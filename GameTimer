@@ -1,0 +1,16 @@
+using UnityEngine;
+
+public class GameTimer : MonoBehaviour
+{
+    public static float TimeAlive { get; private set; }
+
+    private void Update()
+    {
+        TimeAlive += Time.deltaTime;
+    }
+
+    public static void ResetTimer()
+    {
+        TimeAlive = 0f;
+    }
+}

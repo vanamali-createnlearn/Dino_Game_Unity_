@@ -1,0 +1,92 @@
+using UnityEngine;
+using System.Collections.Generic;
+
+public class CactusSpawner : MonoBehaviour
+{
+    [Header("References")]
+    public Transform ObstacleSpawnPoint;
+    public GameObject Obstacle;
+    public LayerMask GroundLayer;
+
+    [Header("Spawn Settings")]
+    public float BaseSpawnInterval = 5f;       // Starting interval
+    public float MinSpawnInterval = 1.2f;      // Fastest allowed interval
+    public float IntervalDecreaseRate = 0.04f; // How fast interval decreases over time
+
+    public int BaseMaxObstacles = 1;           // Starting number of obstacles allowed
+    public int MaxObstaclesIncreaseRate = 1;   // How often we add more obstacles (based on timer)
+    public int MaxObstaclesCap = 5;            // Safety cap
+
+    public float DestroyDistance = 15f;
+
+    private List<GameObject> SpawnedCacti = new List<GameObject>();
+    private Camera MainCamera;
+
+    private void Start()
+    {
+        MainCamera = Camera.main;
+        InvokeRepeating(nameof(SpawnCactusIfNeeded), 0f, 0.2f);
+    }
+
+    private void SpawnCactusIfNeeded()
+    {
+        // Dynamic difficulty based on time survived
+        float time = GameTimer.TimeAlive;
+
+        // 1. Spawn interval that shortens over time
+        float currentInterval = Mathf.Max(
+            MinSpawnInterval,
+            BaseSpawnInterval - (time * IntervalDecreaseRate)
+        );
+
+        // 2. Increasing max active obstacles
+        int currentMaxObstacles = Mathf.Min(
+            BaseMaxObstacles + Mathf.FloorToInt(time / MaxObstaclesIncreaseRate),
+            MaxObstaclesCap
+        );
+
+        // Destroy cacti behind camera
+        SpawnedCacti.RemoveAll(c =>
+        {
+            if (c == null) return true;
+            if (c.transform.position.x + DestroyDistance < MainCamera.transform.position.x)
+            {
+                Destroy(c);
+                return true;
+            }
+            return false;
+        });
+
+        // Do not spawn if we already reached current limit
+        if (SpawnedCacti.Count >= currentMaxObstacles)
+            return;
+
+        // Only spawn if previous spawn interval has elapsed
+        if (time % currentInterval > 0.2f)
+            return;
+
+        float spawnXMin = MainCamera.transform.position.x + 8f;
+        float spawnXMax = MainCamera.transform.position.x + 15f;
+
+        // Avoid overlapping too closely
+        foreach (var c in SpawnedCacti)
+        {
+            if (c != null && c.transform.position.x > spawnXMin && c.transform.position.x < spawnXMax)
+                return;
+        }
+
+        float spawnX = Random.Range(spawnXMin, spawnXMax);
+
+        float cactusHeight = Obstacle.GetComponent<SpriteRenderer>().bounds.size.y;
+        float cactusBottomOffset = cactusHeight / 2f;
+
+        Vector3 spawnPosition = new Vector3(
+            spawnX,
+            ObstacleSpawnPoint.position.y + cactusBottomOffset,
+            0f
+        );
+
+        GameObject newCactus = Instantiate(Obstacle, spawnPosition, Quaternion.identity);
+        SpawnedCacti.Add(newCactus);
+    }
+}

@@ -1,0 +1,18 @@
+using UnityEngine;
+
+public class JumpBoostItem : MonoBehaviour
+{
+    public float BoostAmount = 5f;
+    public float Duration = 3f;
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        DinoMovement dino = collision.GetComponent<DinoMovement>();
+
+        if (dino != null)
+        {
+            dino.ApplyJumpBoost(BoostAmount, Duration);
+            Destroy(gameObject);
+        }
+    }
+}

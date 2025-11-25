@@ -1,0 +1,17 @@
+//add this line on the top of the file with the other "using" statements
+using System.Collections;
+
+//add these blocks before the last '}' close brace
+
+public void ApplyJumpBoost(float boostAmount, float duration)
+{
+  StartCoroutine(JumpBoostRoutine(boostAmount, duration));
+}
+
+private IEnumerator JumpBoostRoutine(float boostAmount, float duration)
+{
+  float originalJumpForce = jumpForce;
+  jumpForce += boostAmount;
+  yield return new WaitForSeconds(duration);
+  jumpForce = originalJumpForce;
+}

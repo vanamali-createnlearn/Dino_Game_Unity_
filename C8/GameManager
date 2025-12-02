@@ -1,0 +1,40 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class GameManager : MonoBehaviour
+{
+    public static GameManager Instance;
+
+    public GameObject gameOverPanel;
+    public float restartDelay = 1.5f;
+
+    private void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+    }
+
+    public void PlayerDied()
+    {
+        // Show the Game Over UI
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(true);
+
+        // Freeze the game world
+        Time.timeScale = 0f;
+
+        // Restart after delay (unscaled because time is frozen)
+        StartCoroutine(RestartAfterDelay());
+    }
+
+    private IEnumerator RestartAfterDelay()
+    {
+        yield return new WaitForSecondsRealtime(restartDelay);
+
+        Time.timeScale = 1f; // resume game speed
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+}

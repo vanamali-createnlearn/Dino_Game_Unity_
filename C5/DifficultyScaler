@@ -1,0 +1,46 @@
+using UnityEngine;
+
+public class DifficultyScaler : MonoBehaviour
+{
+    [Header("References")]
+    public DinoMovement dinoMovement;      // Drag the player here
+    public CactusSpawner cactusSpawner;    // Drag the spawner here
+
+    [Header("Scaling Rates")]
+    public float speedIncreaseRate = 0.15f;     // Speed added per second
+    public float spawnDecreaseRate = 0.04f;     // Spawn interval reduced per second
+    public float minSpawnInterval = 1.2f;       // Hard lower limit
+
+    private void Update()
+    {
+        ScalePlayerSpeed();
+        ScaleCactusSpawnRate();
+    }
+
+    private void ScalePlayerSpeed()
+    {
+        if (dinoMovement == null) return;
+
+        float time = TimerScript.TimeAlive;
+
+        // USE THE EXISTING VALUE IN DinoMovement
+        dinoMovement.speed = dinoMovement.speed + (speedIncreaseRate * Time.deltaTime);
+    }
+
+    private void ScaleCactusSpawnRate()
+    {
+        if (cactusSpawner == null) return;
+
+        float time = TimerScript.TimeAlive;
+
+        // Decrease interval based on time — using ORIGINAL public value inside CactusSpawner
+        float newInterval = Mathf.Max(
+            minSpawnInterval,
+            cactusSpawner.SpawnInterval - (time * spawnDecreaseRate)
+        );
+
+        // Reassign scaled value BACK INTO THE SPAWNER
+        cactusSpawner.CancelInvoke();
+        cactusSpawner.InvokeRepeating(nameof(CactusSpawner.SpawnCactusIfNeeded), 0f, newInterval);
+    }
+}

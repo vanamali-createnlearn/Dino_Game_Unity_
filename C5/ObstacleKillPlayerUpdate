@@ -1,0 +1,4 @@
+//add this one line at the end of the file
+TimerScript.ResetTimer();
+
+//before the three '}' close braces

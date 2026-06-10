@@ -1,3 +1,33 @@
 //Update dino movement script with this line in the variable declaration section
 public bool isGhost = false;
 //we have now created a public variable on the player
+//now add this method at the end of your file after the last added method
+public void ActivateGhost(float duration)
+{
+    StartCoroutine(GhostRoutine(duration));
+}
+
+private System.Collections.IEnumerator GhostRoutine(float duration)
+{
+    isGhost = true;
+
+    SpriteRenderer sr = GetComponent<SpriteRenderer>();
+
+    if (sr != null)
+    {
+        Color color = sr.color;
+        color.a = 0.5f;
+        sr.color = color;
+    }
+
+    yield return new WaitForSeconds(duration);
+
+    isGhost = false;
+
+    if (sr != null)
+    {
+        Color color = sr.color;
+        color.a = 1f;
+        sr.color = color;
+    }
+}

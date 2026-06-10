@@ -1,0 +1,3 @@
+//Update dino movement script with this line in the variable declaration section
+public bool isGhost = false;
+//we have now created a public variable on the player

@@ -1,0 +1,16 @@
+using UnityEngine;
+
+public class ScoreMultiplierPowerUp : MonoBehaviour
+{
+    public int Multiplier = 2;
+    public float Duration = 5f;
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            ScoreManager.Instance.ActivateMultiplier(Multiplier, Duration);
+            Destroy(gameObject);
+        }
+    }
+}

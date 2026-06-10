@@ -1,0 +1,54 @@
+//update scoremanager to look like this. i am pasting the entire code to avoid bugs. Extra time can be alloted to student to only type the changes in the script
+using TMPro;
+using UnityEngine;
+using System.Collections;
+
+public class ScoreManager : MonoBehaviour
+{
+    public static ScoreManager Instance;
+
+    private int score = 0;
+    private int scoreMultiplier = 1;
+
+    public TextMeshProUGUI scoreText;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public void AddScore(int value)
+    {
+        score += value * scoreMultiplier;
+        UpdateScoreUI();
+    }
+
+    public void ActivateMultiplier(int multiplier, float duration)
+    {
+        StartCoroutine(MultiplierRoutine(multiplier, duration));
+    }
+
+    private IEnumerator MultiplierRoutine(int multiplier, float duration)
+    {
+        scoreMultiplier = multiplier;
+
+        yield return new WaitForSeconds(duration);
+
+        scoreMultiplier = 1;
+    }
+
+    private void UpdateScoreUI()
+    {
+        if (scoreText != null)
+        {
+            scoreText.text = "Score: " + score;
+        }
+    }
+}

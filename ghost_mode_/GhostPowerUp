@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 public class GhostPowerUp : MonoBehaviour
 {
@@ -11,17 +10,8 @@ public class GhostPowerUp : MonoBehaviour
 
         if (dino != null)
         {
-            StartCoroutine(ActivateGhost(dino));
+            dino.ActivateGhost(Duration);
             Destroy(gameObject);
         }
-    }
-
-    private IEnumerator ActivateGhost(DinoMovement dino)
-    {
-        dino.isGhost = true;
-
-        yield return new WaitForSeconds(Duration);
-
-        dino.isGhost = false;
     }
 }

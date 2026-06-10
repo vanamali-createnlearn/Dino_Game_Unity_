@@ -1,0 +1,27 @@
+using UnityEngine;
+using System.Collections;
+
+public class GhostPowerUp : MonoBehaviour
+{
+    public float Duration = 5f;
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        DinoMovement dino = collision.GetComponent<DinoMovement>();
+
+        if (dino != null)
+        {
+            StartCoroutine(ActivateGhost(dino));
+            Destroy(gameObject);
+        }
+    }
+
+    private IEnumerator ActivateGhost(DinoMovement dino)
+    {
+        dino.isGhost = true;
+
+        yield return new WaitForSeconds(Duration);
+
+        dino.isGhost = false;
+    }
+}

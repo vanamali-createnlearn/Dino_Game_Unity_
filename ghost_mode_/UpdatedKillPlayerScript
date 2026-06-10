@@ -1,0 +1,46 @@
+//we have just added a checker to see if the player is ghost if not we kill them
+using UnityEngine;
+
+public class CactusKillPlayer : MonoBehaviour
+{
+    private bool isDead = false;
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (isDead)
+            return;
+
+        if (other.gameObject.name.Contains("Cactus"))
+        {
+            DinoMovement dino = GetComponent<DinoMovement>();
+
+            if (dino != null && dino.isGhost)
+            {
+                Debug.Log("Ghost Mode Active - Cactus Ignored!");
+                return;
+            }
+
+            Debug.Log("Player touched a cactus!");
+            isDead = true;
+
+            // Stop all movement
+            Rigidbody2D rb = GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector2.zero;
+                rb.angularVelocity = 0f;
+                rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+            }
+
+            // Play death animation
+            Animator animator = GetComponent<Animator>();
+            if (animator != null)
+            {
+                animator.SetTrigger("Die");
+            }
+
+            // Destroy after delay
+            Destroy(gameObject, 0.8f);
+        }
+    }
+}

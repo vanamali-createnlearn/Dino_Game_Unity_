@@ -1,0 +1,47 @@
+using UnityEngine;
+
+public class HighScoreManager : MonoBehaviour
+{
+    public static HighScoreManager Instance;
+
+    public int HighScore = 0;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        LoadHighScore();
+    }
+
+    public void SaveHighScore(int score)
+    {
+        if (score > HighScore)
+        {
+            HighScore = score;
+
+            PlayerPrefs.SetInt("HighScore", HighScore);
+            PlayerPrefs.Save();
+        }
+    }
+
+    private void LoadHighScore()
+    {
+        HighScore = PlayerPrefs.GetInt("HighScore", 0);
+    }
+
+    public void ResetHighScore()
+    {
+        HighScore = 0;
+
+        PlayerPrefs.DeleteKey("HighScore");
+        PlayerPrefs.Save();
+    }
+}
